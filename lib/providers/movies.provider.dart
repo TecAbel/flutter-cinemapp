@@ -9,6 +9,8 @@ class MoviesProvider extends ChangeNotifier {
   final _apiKey = '654a945b0b97249c03dd8dfdbc008c0f';
   final _language = 'es-MX';
 
+  int popularPage = 0;
+
   List<Movie> onDisplayMovies = [];
   List<Movie> popularMovies = [];
 
@@ -22,7 +24,7 @@ class MoviesProvider extends ChangeNotifier {
     var url = Uri.https(
       _domain,
       endpoint,
-      {'api_key': _apiKey, 'language': _language, 'page': page.toString()},
+      {'api_key': _apiKey, 'language': _language, 'page': '$page'},
     );
     var response = await http.get(url);
     return jsonDecode(response.body);
@@ -36,8 +38,9 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   getPopularMovies({int page = 1}) async {
+    popularPage += 1;
     PopularMoviesResponse res = PopularMoviesResponse.fromMap(
-        await _getMoviesRequest('3/movie/popular', page: page));
+        await _getMoviesRequest('3/movie/popular', page: popularPage));
     popularMovies = [...popularMovies, ...res.results];
     notifyListeners();
   }

@@ -1,18 +1,22 @@
 import 'package:cinemapp/models/models.dart';
-import 'package:cinemapp/providers/movies.provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class MovieSlider extends StatelessWidget {
+  final String title;
   final List<Movie> movies;
-  const MovieSlider({super.key, required this.movies});
+  final Function callBackNext;
+  const MovieSlider(
+      {super.key,
+      required this.title,
+      required this.movies,
+      required this.callBackNext});
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    int initialPage = 1;
-    final movieProvider = Provider.of<MoviesProvider>(context);
-    ScrollController _controller = ScrollController();
+    // int initialPage = 1;
+    // final movieProvider = Provider.of<MoviesProvider>(context);
+    ScrollController controller = ScrollController();
     if (movies.isEmpty) {
       return SizedBox(
         height: size.height * 0.37,
@@ -20,11 +24,12 @@ class MovieSlider extends StatelessWidget {
         child: const Center(child: CircularProgressIndicator()),
       );
     }
-    _controller.addListener(() {
-      double last = _controller.position.maxScrollExtent;
-      double current = _controller.position.pixels;
+    controller.addListener(() {
+      double last = controller.position.maxScrollExtent;
+      double current = controller.position.pixels;
       if (current + 100 >= last) {
-        movieProvider.getPopularMovies(page: initialPage += 1);
+        callBackNext();
+        // movieProvider.getPopularMovies(page: initialPage += 1);
       }
     });
     return SizedBox(
@@ -33,15 +38,15 @@ class MovieSlider extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 20, top: 10),
-            child: Text('Populares',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 10),
+            child: Text(title,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              controller: _controller,
+              controller: controller,
               itemCount: movies.length,
               itemBuilder: (context, index) => _MoviePoster(
                 movie: movies[index],
