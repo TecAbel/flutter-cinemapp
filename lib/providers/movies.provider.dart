@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cinemapp/models/now_playing_response.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,9 +20,9 @@ class MoviesProvider extends ChangeNotifier {
       '3/movie/now_playing',
       {'api_key': apiKey, 'language': language, 'page': '1'},
     );
-    var response =
-        await http.get(url, headers: {'api_key': apiKey, 'language': language});
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+    var response = await http.get(url);
+    NowPlayingResponse res =
+        NowPlayingResponse.fromMap(jsonDecode(response.body));
+    print(res.results[0].title);
   }
 }
