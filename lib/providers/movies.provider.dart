@@ -17,29 +17,28 @@ class MoviesProvider extends ChangeNotifier {
     getPopularMovies();
   }
 
-  getNowPlayingMovies() async {
+  Future<Map<String, dynamic>> _getMoviesRequest(String endpoint,
+      {int page = 1}) async {
     var url = Uri.https(
       _domain,
-      '3/movie/now_playing',
-      {'api_key': _apiKey, 'language': _language, 'page': '1'},
+      endpoint,
+      {'api_key': _apiKey, 'language': _language, 'page': page.toString()},
     );
     var response = await http.get(url);
-    NowPlayingResponse res =
-        NowPlayingResponse.fromMap(jsonDecode(response.body));
+    return jsonDecode(response.body);
+  }
+
+  getNowPlayingMovies() async {
+    NowPlayingResponse res = NowPlayingResponse.fromMap(
+        await _getMoviesRequest('3/movie/now_playing'));
     onDisplayMovies = res.results;
     notifyListeners();
   }
 
-  getPopularMovies() async {
-    var url = Uri.https(
-      _domain,
-      '3/movie/popular',
-      {'api_key': _apiKey, 'language': _language, 'page': '1'},
-    );
-    var response = await http.get(url);
-    PopularMoviesResponse res =
-        PopularMoviesResponse.fromMap(jsonDecode(response.body));
-    popularMovies = res.results;
+  getPopularMovies({int page = 1}) async {
+    PopularMoviesResponse res = PopularMoviesResponse.fromMap(
+        await _getMoviesRequest('3/movie/popular', page: page));
+    popularMovies = [...popularMovies, ...res.results];
     notifyListeners();
   }
 }

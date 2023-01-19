@@ -1,5 +1,7 @@
 import 'package:cinemapp/models/models.dart';
+import 'package:cinemapp/providers/movies.provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MovieSlider extends StatelessWidget {
   final List<Movie> movies;
@@ -8,6 +10,9 @@ class MovieSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    int initialPage = 1;
+    final movieProvider = Provider.of<MoviesProvider>(context);
+    ScrollController _controller = ScrollController();
     if (movies.isEmpty) {
       return SizedBox(
         height: size.height * 0.37,
@@ -15,6 +20,13 @@ class MovieSlider extends StatelessWidget {
         child: const Center(child: CircularProgressIndicator()),
       );
     }
+    _controller.addListener(() {
+      double last = _controller.position.maxScrollExtent;
+      double current = _controller.position.pixels;
+      if (current + 100 >= last) {
+        movieProvider.getPopularMovies(page: initialPage += 1);
+      }
+    });
     return SizedBox(
       width: double.infinity,
       height: size.height * 0.37,
@@ -29,6 +41,7 @@ class MovieSlider extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
+              controller: _controller,
               itemCount: movies.length,
               itemBuilder: (context, index) => _MoviePoster(
                 movie: movies[index],
@@ -63,18 +76,24 @@ class _MoviePoster extends StatelessWidget {
             child: FadeInImage(
               image: NetworkImage(movie.fullPosterPath),
               placeholder: const AssetImage('assets/no-image.jpg'),
-              height: 180,
+              height: 170,
               width: double.infinity,
               fit: BoxFit.cover,
             ),
           ),
         ),
         const SizedBox(height: 5),
-        Text(
-          movie.title,
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+        Expanded(
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(
+              movie.title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: const TextStyle(overflow: TextOverflow.ellipsis),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ),
       ]),
     );
