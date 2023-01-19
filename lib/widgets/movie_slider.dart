@@ -1,13 +1,23 @@
+import 'package:cinemapp/models/models.dart';
 import 'package:flutter/material.dart';
 
 class MovieSlider extends StatelessWidget {
-  const MovieSlider({super.key});
+  final List<Movie> movies;
+  const MovieSlider({super.key, required this.movies});
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    if (movies.isEmpty) {
+      return SizedBox(
+        height: size.height * 0.5,
+        width: double.infinity,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
     return SizedBox(
       width: double.infinity,
-      height: 270,
+      height: size.height * 0.5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -19,8 +29,10 @@ class MovieSlider extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 10,
-              itemBuilder: (context, index) => const _MoviePoster(),
+              itemCount: movies.length,
+              itemBuilder: (context, index) => _MoviePoster(
+                movie: movies[index],
+              ),
             ),
           )
         ],
@@ -30,8 +42,10 @@ class MovieSlider extends StatelessWidget {
 }
 
 class _MoviePoster extends StatelessWidget {
+  final Movie movie;
   const _MoviePoster({
     Key? key,
+    required this.movie,
   }) : super(key: key);
 
   @override
@@ -46,9 +60,9 @@ class _MoviePoster extends StatelessWidget {
               Navigator.pushNamed(context, 'details', arguments: 'la peli'),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: const FadeInImage(
-              image: NetworkImage('https://via.placeholder.com/300x400'),
-              placeholder: AssetImage('assets/no-image.jpg'),
+            child: FadeInImage(
+              image: NetworkImage(movie.fullPosterPath),
+              placeholder: const AssetImage('assets/no-image.jpg'),
               height: 180,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -56,8 +70,8 @@ class _MoviePoster extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 5),
-        const Text(
-          'Título: Star Wars: The Force Unleashed',
+        Text(
+          movie.title,
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
