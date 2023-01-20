@@ -1,3 +1,4 @@
+import 'package:cinemapp/models/models.dart';
 import 'package:cinemapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -6,17 +7,21 @@ class DetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String movie =
-        ModalRoute.of(context)?.settings.arguments.toString() ?? 'no-movie';
+    final Movie movie = ModalRoute.of(context)?.settings.arguments as Movie;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          const _CustomAppBar(),
+          _CustomAppBar(
+            title: movie.title,
+            urlImage: movie.fullBackDropPath,
+          ),
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                _PosterHead(),
-                const _PosterBody(),
+                _PosterHead(movie: movie),
+                _PosterBody(
+                  str: movie.overview,
+                ),
                 const _PosterBody(),
                 const _PosterBody(),
                 const _PosterBody(),
@@ -31,16 +36,16 @@ class DetailsScreen extends StatelessWidget {
 }
 
 class _PosterBody extends StatelessWidget {
-  const _PosterBody({
-    Key? key,
-  }) : super(key: key);
+  final String? str;
+  const _PosterBody({Key? key, this.str}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Text(
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet accumsan tellus, nec consequat justo. Nullam risus lacus, tempus quis venenatis et, feugiat in lacus. Curabitur nec euismod massa.',
+          str ??
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet accumsan tellus, nec consequat justo. Nullam risus lacus, tempus quis venenatis et, feugiat in lacus. Curabitur nec euismod massa.',
           textAlign: TextAlign.justify,
           style: Theme.of(context).textTheme.subtitle1,
         ));
@@ -48,14 +53,18 @@ class _PosterBody extends StatelessWidget {
 }
 
 class _CustomAppBar extends StatelessWidget {
+  final String? title;
+  final String? urlImage;
   const _CustomAppBar({
     Key? key,
+    required this.title,
+    required this.urlImage,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 250,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsets.all(0),
@@ -63,15 +72,16 @@ class _CustomAppBar extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           padding: const EdgeInsets.only(bottom: 15),
-          color: const Color.fromRGBO(0, 0, 0, 0.6),
+          color: const Color.fromRGBO(0, 0, 0, 0.4),
           alignment: Alignment.bottomCenter,
-          child: const Text('movie.title'),
+          child: Text(title ?? 'movie.title'),
         ),
         centerTitle: true,
-        background: const FadeInImage(
-          placeholder: AssetImage('assets/loading.gif'),
-          image: NetworkImage('https://via.placeholder.com/500x300'),
+        background: FadeInImage(
+          placeholder: const AssetImage('assets/loading.gif'),
+          image: NetworkImage(urlImage ?? 'https://via.placeholder/500x300'),
           fit: BoxFit.cover,
+          alignment: Alignment.center,
         ),
       ),
     );
@@ -79,6 +89,8 @@ class _CustomAppBar extends StatelessWidget {
 }
 
 class _PosterHead extends StatelessWidget {
+  final Movie movie;
+  const _PosterHead({required this.movie});
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -88,10 +100,10 @@ class _PosterHead extends StatelessWidget {
       child: Row(children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: const FadeInImage(
+          child: FadeInImage(
             height: 180,
-            placeholder: AssetImage('assets/no-image.jpg'),
-            image: NetworkImage('https://via.placeholder.com/200x300'),
+            placeholder: const AssetImage('assets/no-image.jpg'),
+            image: NetworkImage(movie.fullPosterPath),
             fit: BoxFit.cover,
           ),
         ),
@@ -100,13 +112,20 @@ class _PosterHead extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              'movie.title',
-              style: textTheme.titleLarge,
+            SizedBox(
+              width: 160,
+              child: Text(
+                movie.title,
+                style: textTheme.titleLarge,
+                maxLines: 5,
+              ),
             ),
-            Text(
-              'movie.resume',
-              style: textTheme.subtitle1,
+            SizedBox(
+              width: 160,
+              child: Text(
+                movie.originalTitle,
+                style: textTheme.subtitle1,
+              ),
             ),
             Row(
               children: [
@@ -117,7 +136,7 @@ class _PosterHead extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'movie.likeAverage',
+                  '${movie.voteAverage}',
                   style: textTheme.caption,
                 )
               ],

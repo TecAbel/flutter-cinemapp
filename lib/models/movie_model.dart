@@ -32,7 +32,18 @@ class Movie {
   int voteCount;
 
   get fullPosterPath {
-    return 'https://image.tmdb.org/t/p/w500$posterPath';
+    if (backdropPath != null) {
+      return 'https://image.tmdb.org/t/p/w500$posterPath';
+    }
+    return 'https://understandingcompassion.com/wp-content/uploads/2018/04/noimage.png';
+  }
+
+  get fullBackDropPath {
+    if (backdropPath != null) {
+      return 'https://image.tmdb.org/t/p/w500$backdropPath';
+    }
+
+    return 'https://understandingcompassion.com/wp-content/uploads/2018/04/noimage.png';
   }
 
   Movie.fromMap(Map<String, dynamic> json)
@@ -48,6 +59,6 @@ class Movie {
         releaseDate = DateTime.parse(json['release_date']),
         title = json['title'],
         video = json['video'],
-        voteAverage = json['vote'],
+        voteAverage = double.parse(json['vote_average'].toString()),
         voteCount = json['vote_count'];
 }
