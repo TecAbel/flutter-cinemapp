@@ -2,6 +2,15 @@
 
 A new Flutter project.
 
+# Json Annotation (for model build)
+Run this command
+    flutter pub run build_runner build
+And add on file top
+    import 'package:json_annotation/json_annotation.dart';
+    part 'filename.g.dart'
+And right before class model add
+    @JsonSerializable()
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

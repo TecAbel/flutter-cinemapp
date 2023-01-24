@@ -25,30 +25,15 @@ class DetailsScreen extends StatelessWidget {
                 const _PosterBody(),
                 const _PosterBody(),
                 const _PosterBody(),
-                const CastSlider(),
+                CastSlider(
+                  movieId: movie.id,
+                ),
               ],
             ),
           )
         ],
       ),
     );
-  }
-}
-
-class _PosterBody extends StatelessWidget {
-  final String? str;
-  const _PosterBody({Key? key, this.str}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Text(
-          str ??
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet accumsan tellus, nec consequat justo. Nullam risus lacus, tempus quis venenatis et, feugiat in lacus. Curabitur nec euismod massa.',
-          textAlign: TextAlign.justify,
-          style: Theme.of(context).textTheme.subtitle1,
-        ));
   }
 }
 
@@ -71,7 +56,7 @@ class _CustomAppBar extends StatelessWidget {
         title: Container(
           width: double.infinity,
           height: double.infinity,
-          padding: const EdgeInsets.only(bottom: 15),
+          padding: const EdgeInsets.only(bottom: 2, right: 10, left: 10),
           color: const Color.fromRGBO(0, 0, 0, 0.4),
           alignment: Alignment.bottomCenter,
           child: Text(title ?? 'movie.title'),
@@ -145,5 +130,22 @@ class _PosterHead extends StatelessWidget {
         ),
       ]),
     );
+  }
+}
+
+class _PosterBody extends StatelessWidget {
+  final String? str;
+  const _PosterBody({Key? key, this.str}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Text(
+          str ??
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet accumsan tellus, nec consequat justo. Nullam risus lacus, tempus quis venenatis et, feugiat in lacus. Curabitur nec euismod massa.',
+          textAlign: TextAlign.justify,
+          style: Theme.of(context).textTheme.subtitle1,
+        ));
   }
 }

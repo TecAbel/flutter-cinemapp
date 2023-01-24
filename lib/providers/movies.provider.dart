@@ -44,4 +44,9 @@ class MoviesProvider extends ChangeNotifier {
     popularMovies = [...popularMovies, ...res.results];
     notifyListeners();
   }
+
+  Future<MovieCreditsResponse> getMovieCredits(int movieId) async {
+    var res = await _getMoviesRequest('3/movie/$movieId/credits');
+    return MovieCreditsResponse.fromJson(res);
+  }
 }
