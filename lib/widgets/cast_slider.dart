@@ -1,16 +1,46 @@
 import 'package:cinemapp/models/cast_model.dart';
+import 'package:cinemapp/models/credits_response.dart';
 import 'package:cinemapp/providers/movies.provider.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
-class CastSlider extends StatefulWidget {
+class CastSlider extends StatelessWidget {
   final int movieId;
+
   const CastSlider({super.key, required this.movieId});
 
   @override
-  State<CastSlider> createState() => _CastSliderState();
+  Widget build(BuildContext context) {
+    final moviesProvider = MoviesProvider();
+
+    return FutureBuilder(
+      future: moviesProvider.getMovieCredits(movieId),
+      builder:
+          (BuildContext context, AsyncSnapshot<MovieCreditsResponse> snapshot) {
+        if (snapshot.hasData) {
+          var cast = snapshot.data?.cast ?? [];
+          return Container(
+            height: 180,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            width: double.infinity,
+            child: ListView.builder(
+              itemCount: cast.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (ctx, item) => _CastCard(actor: cast[item]),
+            ),
+          );
+        }
+        return Container(
+          height: 180,
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          width: double.infinity,
+          child: const CupertinoActivityIndicator(),
+        );
+      },
+    );
+  }
 }
 
-class _CastSliderState extends State<CastSlider> {
+/* class _CastSliderState extends State<CastSlider> {
   List<Cast> cast = [];
   void getCast() async {
     MoviesProvider movieService = MoviesProvider();
@@ -38,7 +68,7 @@ class _CastSliderState extends State<CastSlider> {
       ),
     );
   }
-}
+} */
 
 class _CastCard extends StatelessWidget {
   final Cast actor;
