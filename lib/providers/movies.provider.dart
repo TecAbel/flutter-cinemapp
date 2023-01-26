@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:cinemapp/helpers/debouncer.dart';
 import 'package:cinemapp/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +10,13 @@ class MoviesProvider extends ChangeNotifier {
   final _domain = 'api.themoviedb.org';
   final _apiKey = '654a945b0b97249c03dd8dfdbc008c0f';
   final _language = 'es-MX';
+
+  final debouncer = Debouncer(duration: const Duration(milliseconds: 500));
+  final StreamController<SearchResponse> _suggestionsStreamController =
+      StreamController.broadcast();
+
+  Stream<SearchResponse> get suggestionStream =>
+      _suggestionsStreamController.stream;
 
   int popularPage = 0;
 
@@ -64,5 +73,20 @@ class MoviesProvider extends ChangeNotifier {
   Future<SearchResponse> getSearchResults(String query) async {
     var res = await _getMoviesRequest('3/search/movie', query: query);
     return SearchResponse.fromJson(res);
+  }
+
+  void getSuggestionsByQuery(String query) {
+    debouncer.value = '';
+    debouncer.onValue = (value) async {
+      final res = await getSearchResults(value);
+      _suggestionsStreamController.add(res);
+    };
+
+    final timer = Timer.periodic(const Duration(milliseconds: 300), (_) {
+      debouncer.value = query;
+    });
+
+    Future.delayed(const Duration(milliseconds: 301))
+        .then((_) => timer.cancel());
   }
 }

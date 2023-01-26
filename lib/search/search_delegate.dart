@@ -38,8 +38,11 @@ class MovieSearch extends SearchDelegate {
     if (query.isEmpty) {
       return _emptySearch();
     }
-    return FutureBuilder(
-      future: moviesProvider.getSearchResults(query),
+
+    moviesProvider.getSuggestionsByQuery(query);
+
+    return StreamBuilder(
+      stream: moviesProvider.suggestionStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return _emptySearch();
