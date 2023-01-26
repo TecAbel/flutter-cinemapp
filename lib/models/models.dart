@@ -1,3 +1,4 @@
+export 'package:cinemapp/models/search_response.dart';
 export 'package:cinemapp/models/credits_response.dart';
 export 'package:cinemapp/models/cast_model.dart';
 export 'package:cinemapp/models/popular_movies_response.dart';

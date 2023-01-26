@@ -22,11 +22,16 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> _getMoviesRequest(String endpoint,
-      {int page = 1}) async {
+      {int page = 1, String? query}) async {
     var url = Uri.https(
       _domain,
       endpoint,
-      {'api_key': _apiKey, 'language': _language, 'page': '$page'},
+      {
+        'api_key': _apiKey,
+        'language': _language,
+        'page': '$page',
+        'query': query,
+      },
     );
     var response = await http.get(url);
     return jsonDecode(response.body);
@@ -54,5 +59,10 @@ class MoviesProvider extends ChangeNotifier {
     var res = await _getMoviesRequest('3/movie/$movieId/credits');
     castListed[movieId] = MovieCreditsResponse.fromJson(res);
     return castListed[movieId]!;
+  }
+
+  Future<SearchResponse> getSearchResults(String query) async {
+    var res = await _getMoviesRequest('3/search/movie', query: query);
+    return SearchResponse.fromJson(res);
   }
 }
